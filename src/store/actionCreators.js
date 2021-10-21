@@ -26,10 +26,10 @@ export function newReservation(reservation) {
 
 export const deleteReservationType = "DELETE_RESERVATION";
 
-export function deleteReservation(reservation) {
+export function deleteReservation(id) {
   return {
     type: deleteReservationType,
-    reservation,
+    id,
   }
 }
 

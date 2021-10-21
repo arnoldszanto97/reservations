@@ -2,6 +2,7 @@ import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import React from "react";
 import { Provider } from "react-redux";
 import { NewReservationContainer, ReservationsContainer } from "../containers";
+import { CreateEditReservationProvider } from "../context/CreateEditReservationContext";
 import store from '../store/store';
 import "./App.css";
 import theme from './theme';
@@ -11,8 +12,10 @@ function App() {
     <Provider store={store}>
       <MuiThemeProvider theme={theme}>
         <div className="App">
-          <ReservationsContainer />
-          <NewReservationContainer />
+          <CreateEditReservationProvider>
+            <ReservationsContainer />
+            <NewReservationContainer />
+          </CreateEditReservationProvider>
         </div>
       </MuiThemeProvider>
     </Provider>

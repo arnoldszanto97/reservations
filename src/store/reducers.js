@@ -39,7 +39,7 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         list: state.list.filter(function (reservation) { 
-          return reservation.id !== action.reservation.id;
+          return reservation.id !== action.id;
         }),
       };
     }
