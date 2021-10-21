@@ -23,3 +23,22 @@ export function newReservation(reservation) {
     reservation,
   };
 }
+
+export const deleteReservationType = "DELETE_RESERVATION";
+
+export function deleteReservation(reservation) {
+  return {
+    type: deleteReservationType,
+    reservation,
+  }
+}
+
+export const editReservationType = "EDIT_RESERVATION";
+
+export function editReservation(id, reservation) {
+  return {
+    type: editReservationType,
+    reservation,
+    id,
+  }
+}

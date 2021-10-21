@@ -1,4 +1,4 @@
-import { newReservationType, receiveReservationsType } from "./actionCreators";
+import { newReservationType, receiveReservationsType, deleteReservationType, editReservationType } from "./actionCreators";
 
 /*
   Reducers specify how the application's state changes in response to actions sent to the store. 
@@ -33,6 +33,25 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         list: newList,
+      };
+    }
+    case deleteReservationType: {
+      return {
+        ...state,
+        list: state.list.filter(function (reservation) { 
+          return reservation.id !== action.reservation.id;
+        }),
+      };
+    }
+    case editReservationType: {
+      return {
+        ...state,
+        list: state.list.map(function (reservation) { 
+          if (reservation.id === action.id){
+            return action.reservation;
+          }
+          return reservation;
+        }),
       };
     }
     default:
