@@ -1,90 +1,94 @@
-import { FormControl, FormHelperText, Grid, Input, InputLabel, Typography } from "@material-ui/core";
-import React, { useState } from "react";
+import React from "react";
+import * as yup from 'yup';
+import { Formik } from 'formik';
+import { Button } from '@blueprintjs/core';
+import { Grid, Typography, TextField } from "@material-ui/core";
 import { CreateEditReservationContext } from '../context/CreateEditReservationContext';
-import { SubmitButton } from '../elements';
 
 const CreateEditReservationComponent = (props) => {
-  const { reservation, setReservation, resetReservation } = React.useContext(CreateEditReservationContext);
-  const mode = React.useMemo(() => reservation.id === undefined ? 'create' : 'edit', [reservation])
-  const [name, setName] = useState(reservation ? reservation.reservationName : undefined);
-  const [numberOfGuests, setNumberOfGuests] = useState(reservation ? reservation.numberOfGuests : undefined);
-  const submitDisabled = !name || !numberOfGuests;
+  const { editReservation, createReservation } = props;
+  const { reservation, resetReservation } = React.useContext(CreateEditReservationContext);
 
-  React.useEffect(() => {
-    setReservation((state) => ({
-      ...state,
-      numberOfGuests,
-      reservationName: name,
-    }));
-  }, [name, numberOfGuests, setReservation]);
-
-  React.useEffect(() => {
-    if (reservation && reservation.reservationName !== name) {
-      setName(reservation.reservationName);
+  const handleSubmit = React.useCallback((values, formikHelpers) => {
+    if (values.id === undefined) {
+      // CREATE
+      createReservation(values);
+      resetReservation();
+      formikHelpers.resetForm();
+      return;
     }
-    if (reservation && reservation.numberOfGuests !== numberOfGuests) {
-      setNumberOfGuests(reservation.numberOfGuests);
-    }
-  }, [reservation]);
-
-  React.useEffect(() => {
-    console.log(reservation)
-  }, [reservation]);
-
-  const handleSubmit = React.useCallback((event) => {
-    event.preventDefault();
-    if (reservation && reservation.id) {
-      props.editReservation(reservation.id, { name, numberOfGuests });
-    } else {
-      props.createReservation({ name, numberOfGuests });
-    }
+    // EDIT
+    editReservation(values.id, values);
     resetReservation();
-  }, [name, numberOfGuests, props, reservation, resetReservation]);
-
-  const reset = React.useCallback(() => {
-    setName(undefined);
-    setNumberOfGuests(undefined);
-    resetReservation();
-  }, [resetReservation]);
+    formikHelpers.resetForm();
+  }, [createReservation, editReservation, resetReservation]);
 
   return (
-    <form noValidate autoComplete="off" onSubmit={handleSubmit}>
-      <Grid container direction="column" spacing={1} justify="center" alignItems="center">
-        <Grid item>
-          <Typography>{mode === 'create' ? 'New' : 'Edit'} reservation:</Typography>
-        </Grid>
-        <Grid item>
-          <FormControl>
-            <InputLabel required>
-              Name
-            </InputLabel>
-            <Input id="name" onChange={(event) => setName(event.target.value)} />
-            <FormHelperText id="name-text">
-              We'll never share your name.
-            </FormHelperText>
-          </FormControl>
-        </Grid>
-        <Grid item>
-          <FormControl>
-            <InputLabel required>
-              Number of guests
-            </InputLabel>
-            <Input id="numberOfGuests" onChange={(event) => setNumberOfGuests(event.target.value)} />
-          </FormControl>
-        </Grid>
-        <Grid item>
-          <Grid container>
-            <Grid item>
-            <SubmitButton type="submit" disabled={submitDisabled} />
-            </Grid>
-            <Grid item>
-              <button onClick={reset}>Reset form</button>
+    <Formik
+      enableReinitialize
+      validationSchema={
+        yup.object().shape({
+          name: yup.string().required('Name is required!'),
+          numberOfGuests: yup.number().required('Number of guests is required!').min(1, "At least one guest is required!"),
+        })
+      }
+      initialValues={{
+        id: reservation?.id,
+        name: reservation?.name,
+        numberOfGuests: reservation?.numberOfGuests,
+      }}
+      onSubmit={handleSubmit}
+    >
+      {({values, handleChange, resetForm, submitForm, touched, errors, isValid, dirty }) => (
+        <Grid container direction="column" spacing={2} justify="center" alignItems="center">
+          <Grid item>
+            <Typography>{values.id === undefined ? 'New' : 'Edit'} reservation:</Typography>
+          </Grid>
+          <Grid item>
+            <TextField
+              value={values.name || ''} 
+              name="name"
+              id="name"
+              label="Name"
+              onChange={handleChange}
+              error={touched.name && !! errors.name}
+              helperText={touched.name && errors.name}
+            />
+          </Grid>
+          <Grid item>
+            <TextField
+              type="number"
+              value={values.numberOfGuests || ''} 
+              name="numberOfGuests"
+              id="numberOfGuests"
+              onChange={handleChange}
+              label="Number of guests"
+              error={touched.numberOfGuests && !! errors.numberOfGuests}
+              helperText={touched.numberOfGuests && errors.numberOfGuests}
+            />
+          </Grid>
+          <Grid item>
+            <Grid container spacing={2}>
+              <Grid item>
+              <Button
+                intent={values.id  === undefined ? 'primary' : 'warning'}
+                type="submit"
+                disabled={!isValid || !dirty}
+                onClick={() => submitForm()}
+                text={values.id  === undefined ? 'New' : 'Edit'}
+              />
+              </Grid>
+              <Grid item>
+                <Button onClick={() => {
+                  resetReservation();
+                  resetForm();
+                }}>Reset form</Button>
+              </Grid>
             </Grid>
           </Grid>
-          
         </Grid>
-      </Grid>
-    </form>
+      )}
+    </Formik>
   );
 };
 

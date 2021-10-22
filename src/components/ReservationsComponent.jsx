@@ -1,10 +1,11 @@
 import React from "react";
+import { Button } from "@blueprintjs/core";
 import { CreateEditReservationContext } from '../context/CreateEditReservationContext';
 import "./ReservationsComponent.css";
 
 const ReservationsComponent = (props) => {
   const { reservations, deleteReservation } = props;
-  const { reservation, setReservation, resetReservation } = React.useContext(CreateEditReservationContext);
+  const { setReservation } = React.useContext(CreateEditReservationContext);
 
   return (
     <div className="reservationContainer">
@@ -13,8 +14,8 @@ const ReservationsComponent = (props) => {
         <div className="reservation" key={index}>
           <p>Name: {reservation.name}</p>
           <p>Guests: {reservation.numberOfGuests}</p>
-          <button onClick={() => deleteReservation(reservation.id)}>Delete</button>
-          <button onClick={() => setReservation(reservation)}>Edit</button>
+          <Button intent="danger" onClick={() => deleteReservation(reservation.id)} text="Delete" />
+          <Button intent="warning" onClick={() => setReservation(reservation)} text="Edit" />
         </div>
       ))}
     </div>

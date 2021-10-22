@@ -4,7 +4,7 @@ import { newReservation, editReservation } from "../store/actionCreators";
 
 // https://react-redux.js.org/using-react-redux/connect-mapdispatch
 const mapDispatchToProps = (dispatch) => ({
-  editReservation: (reservation) => dispatch(editReservation(reservation)),
+  editReservation: (id, reservation) => dispatch(editReservation(id, reservation)),
   createReservation: (reservation) => dispatch(newReservation(reservation)),
 });
 

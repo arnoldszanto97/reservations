@@ -32,7 +32,7 @@ const reducer = (state = initialState, action) => {
       newList.push(action.reservation);
       return {
         ...state,
-        list: newList,
+        list: newList.map((reservation, index) => ({ ...reservation, id: index + 1 })),
       };
     }
     case deleteReservationType: {
