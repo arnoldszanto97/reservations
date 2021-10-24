@@ -10,11 +10,15 @@ const initialState = {
       id: 1,
       name: "John Smith",
       numberOfGuests: 4,
+      email: 'john.smith@gmail.com',
+      date: new Date('May 11, 2025 11:35:00'),
     },
     {
       id: 2,
       name: "Emily Parker",
       numberOfGuests: 2,
+      email: 'emily.parker@gmail.com',
+      date: new Date('October 15, 2025 10:45:00'),
     },
   ],
 };

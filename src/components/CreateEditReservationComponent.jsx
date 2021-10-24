@@ -1,8 +1,9 @@
 import React from "react";
 import * as yup from 'yup';
 import { Formik } from 'formik';
-import { Button } from '@blueprintjs/core';
-import { Grid, Typography, TextField } from "@material-ui/core";
+import { DatePicker } from '@blueprintjs/datetime';
+import { Button, FormGroup, InputGroup, NumericInput } from '@blueprintjs/core';
+import { Grid, Typography } from "@material-ui/core";
 import { CreateEditReservationContext } from '../context/CreateEditReservationContext';
 
 const CreateEditReservationComponent = (props) => {
@@ -28,44 +29,93 @@ const CreateEditReservationComponent = (props) => {
       enableReinitialize
       validationSchema={
         yup.object().shape({
-          name: yup.string().required('Name is required!'),
+          name: yup.string().min(1).required('Name is required!'),
           numberOfGuests: yup.number().required('Number of guests is required!').min(1, "At least one guest is required!"),
+          date: yup.date().min(new Date(Date.now())).required("Reservation date is required!"),
+          email: yup.string().email('Must be a valid email!').notRequired(),
         })
       }
       initialValues={{
         id: reservation?.id,
+        date: reservation?.date,
         name: reservation?.name,
+        email: reservation?.email,
         numberOfGuests: reservation?.numberOfGuests,
       }}
       onSubmit={handleSubmit}
     >
-      {({values, handleChange, resetForm, submitForm, touched, errors, isValid, dirty }) => (
+      {({values, handleChange, resetForm, submitForm, errors, isValid, dirty, setFieldValue
+       }) => (
         <Grid container direction="column" spacing={2} justify="center" alignItems="center">
           <Grid item>
             <Typography>{values.id === undefined ? 'New' : 'Edit'} reservation:</Typography>
           </Grid>
           <Grid item>
-            <TextField
-              value={values.name || ''} 
-              name="name"
-              id="name"
+            <FormGroup
+              labelInfo="(required)"
               label="Name"
-              onChange={handleChange}
-              error={touched.name && !! errors.name}
-              helperText={touched.name && errors.name}
-            />
+              helperText={errors.name}
+              intent={!!errors.name ? 'danger' : undefined}
+            >
+              <InputGroup
+                value={values.name ?? ''} 
+                name="name"
+                id="name"
+                onChange={handleChange}
+                intent={!!errors.name ? 'danger' : undefined}
+              />
+            </FormGroup>
           </Grid>
           <Grid item>
-            <TextField
-              type="number"
-              value={values.numberOfGuests || ''} 
-              name="numberOfGuests"
-              id="numberOfGuests"
-              onChange={handleChange}
+            <FormGroup
+              labelInfo="(required)"
               label="Number of guests"
-              error={touched.numberOfGuests && !! errors.numberOfGuests}
-              helperText={touched.numberOfGuests && errors.numberOfGuests}
-            />
+              helperText={errors.numberOfGuests}
+              intent={!!errors.numberOfGuests ? 'danger' : undefined}
+            >
+              <NumericInput
+                value={values.numberOfGuests ?? ''} 
+                name="numberOfGuests"
+                id="numberOfGuests"
+                min={1}
+                onChange={handleChange}
+                intent={!!errors.numberOfGuests ? 'danger' : undefined}
+                onValueChange={(valueAsNumber) => setFieldValue('numberOfGuests', valueAsNumber, true)}
+              />
+            </FormGroup>
+          </Grid>
+          <Grid item>
+            <FormGroup
+              labelInfo="(required)"
+              label="Date of reservation"
+              helperText={errors.date}
+              intent={!!errors.date ? 'danger' : undefined}
+            >
+              <DatePicker
+                highlightCurrentDay
+                timePrecision="minute"
+                value={values.date ?? null}
+                minDate={new Date(Date.now())}
+                maxDate={new Date(2050, 12, 31)}
+                onChange={(selectedDate) => setFieldValue('date', selectedDate, true)}
+              />
+            </FormGroup>
+          </Grid>
+          <Grid item>
+            <FormGroup
+              labelInfo="(optional)"
+              label="Contact email"
+              helperText={errors.email}
+              intent={!!errors.email ? 'danger' : undefined}
+            >
+              <InputGroup
+                value={values.email ?? ''} 
+                name="email"
+                id="email"
+                onChange={handleChange}
+                intent={!!errors.email ? 'danger' : undefined}
+              />
+            </FormGroup>
           </Grid>
           <Grid item>
             <Grid container spacing={2}>
