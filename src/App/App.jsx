@@ -15,8 +15,8 @@ function App() {
         <div className="App">
           <CreateEditReservationProvider>
             <Grid container direction="row">
-              <Grid item xs={6}><ReservationsContainer /></Grid>
-              <Grid item xs={6}><NewReservationContainer /></Grid>
+              <Grid item xs={4}><ReservationsContainer /></Grid>
+              <Grid item xs={8}><NewReservationContainer /></Grid>
             </Grid>
           </CreateEditReservationProvider>
         </div>
